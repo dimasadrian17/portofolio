@@ -1,0 +1,44 @@
+---
+import '../styles/global.css';
+const { title, frontmatter } = Astro.props;
+const t = title ?? frontmatter?.title ?? 'Home';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const u = (p = '') => `${base}/${p}`;
+const path = Astro.url.pathname.replace(base, '').replace(/^\/|\/$/g, '') || 'home';
+const nav = [['home', ''], ['about', 'about/'], ['experience', 'experience/'], ['projects', 'projects/'], ['certificates', 'certificates/'], ['writing', 'writing/'], ['contact', 'contact/']];
+const label = { home: 'Home', about: 'About', experience: 'Experience', projects: 'Projects', certificates: 'Certificates', writing: 'Writing', contact: 'Contact' };
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{t === 'Home' ? 'Dimas Adrian Haifa Arfan' : `${t} | Dimas Adrian Haifa Arfan`}</title>
+  <meta name="description" content="Telecommunications engineering student at PENS: broadband NOC, FTTx planning, and cybersecurity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="brand" href={u()}>Dimas Adrian Haifa Arfan</a>
+      <nav aria-label="Main">
+        {nav.map(([k, p]) => <a href={u(p)} aria-current={path === k ? 'page' : undefined}>{label[k]}</a>)}
+      </nav>
+    </div>
+  </header>
+  <main><div class="wrap"><div class="prose"><slot /></div></div></main>
+  <footer><div class="wrap"><span>© {new Date().getFullYear()} Dimas Adrian Haifa Arfan</span><span>Surabaya, Indonesia</span></div></footer>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image preview"><img id="lbi" alt=""><p id="lbc"></p><button id="lbx" type="button">Close</button></div>
+  <script is:inline>
+    var lb=document.getElementById("lb"),lbi=document.getElementById("lbi"),lbc=document.getElementById("lbc"),lbx=document.getElementById("lbx");
+    document.addEventListener("keydown",function(e){if(e.key==="Escape")lb.classList.remove("on");});
+    document.addEventListener("click",function(e){
+      var z=e.target.closest("[data-zoom]");
+      if(z){var im=z.querySelector("img");lbi.src=im.src;lbi.alt=im.alt;lbc.textContent=z.dataset.zoom;lb.classList.add("on");lbx.focus();return;}
+      if(e.target.closest("#lb")&&e.target.id!=="lbi"){lb.classList.remove("on");}
+    });
+  </script>
+</body>
+</html>

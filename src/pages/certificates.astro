@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const u = (p = '') => `${base}/${p}`;
+const items = Object.entries(import.meta.glob('../content/certificates/*.md', { eager: true })).sort().map(([, m]) => m.frontmatter);
+const cats = [];
+for (const c of items) { let g = cats.find((x) => x.name === c.category); if (!g) { g = { name: c.category, list: [] }; cats.push(g); } g.list.push(c); }
+---
+<Base title="Certificates">
+  <h2>Certificates</h2>
+  <p>{items.length} certificates in {cats.length} groups. Click an image to view it full size.</p>
+  {cats.map((g) => (
+    <>
+      <h2 class="s">{g.name} <span class="meta">{g.list.length}</span></h2>
+      <div class="cgrid">
+        {g.list.map((c) => (
+          <div class="card">
+            {c.image && <button class="th" data-zoom={`${c.title}, ${c.issuer}`}><img src={u(c.image)} alt={`Certificate: ${c.title}`} loading="lazy" /></button>}
+            <div class="ct">
+              <h3>{c.title}</h3>
+              <div class="meta">{c.issuer}</div>
+              <div class="meta">{c.tag && <span class="tag">{c.tag}</span>}{c.date}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  ))}
+</Base>

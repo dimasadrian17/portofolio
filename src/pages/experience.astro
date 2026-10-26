@@ -1,0 +1,13 @@
+---
+import Base from '../layouts/Base.astro';
+import Entries from '../components/Entries.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const items = Object.entries(import.meta.glob('../content/experience/*.md', { eager: true })).sort().map(([, m]) => m);
+---
+<Base title="Experience">
+  <h2>Experience</h2>
+  <Entries items={items} />
+  <h2 class="s">Certifications and achievements</h2>
+  <p>Competitions, bootcamps, courses, and webinars, each with its certificate image.</p>
+  <p class="more"><a href={`${base}/certificates/`}>View all certificates</a></p>
+</Base>

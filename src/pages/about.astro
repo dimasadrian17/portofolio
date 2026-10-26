@@ -1,0 +1,6 @@
+---
+import Base from '../layouts/Base.astro';
+import Entries from '../components/Entries.astro';
+const items = Object.entries(import.meta.glob('../content/about/*.md', { eager: true })).sort().map(([, m]) => m);
+---
+<Base title="About"><h2>About</h2><Entries items={items} /></Base>

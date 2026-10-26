@@ -1,0 +1,37 @@
+---
+// Renders a folder of Markdown files as grouped rows (fields are explained in the README).
+const { items = [] } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const u = (p = '') => `${base}/${p}`;
+const entries = items.map((m) => ({ ...m.frontmatter, C: m.Content }));
+const groups = [];
+for (const e of entries) {
+  if (e.kind === 'intro') { groups.push({ I: e.C }); continue; }
+  const last = groups[groups.length - 1];
+  if (last && !last.I && last.section === (e.section || '')) last.rows.push(e);
+  else groups.push({ section: e.section || '', rows: [e] });
+}
+---
+{groups.map((g) => g.I ? <g.I /> : (
+  <>
+    {g.section && <h2 class="s">{g.section}</h2>}
+    <div class="rows">
+      {g.rows.map((e) => (
+        <div class="row">
+          {e.when ? <span class="when">{e.when}</span> : <h3>{e.title}</h3>}
+          <div>
+            {e.when && <h3>{e.title}{e.status && <span class="status">{e.status}</span>}</h3>}
+            {e.where && <span class="where">{e.where}</span>}
+            <e.C />
+            {e.photos && e.photos.length > 0 && (
+              <div class="strip">
+                {e.photos.map((p) => <button class="th" data-zoom={p.caption}><img src={u(p.src)} alt={p.caption} loading="lazy" /></button>)}
+              </div>
+            )}
+            {e.link && <p class="more"><a href={u(e.link.to)}>{e.link.text}</a></p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+))}

@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const u = (p = '') => `${base}/${p}`;
+const latest = Object.entries(import.meta.glob('../content/writing/*.md', { eager: true })).sort().map(([, m]) => m.frontmatter).slice(0, 3);
+const pillars = [
+  ['Cybersecurity', 'IDS with Suricata and Zeek, Wazuh, web penetration testing, blue team basics.'],
+  ['Network', 'NOC monitoring, PPPoE, MPLS, Mikrotik, and traffic analysis with Wireshark.'],
+  ['Telecommunications', 'Signals, modulation, and the systems that carry them.'],
+  ['Fiber optic', 'FTTH/FTTx planning, OLT and ONU, optical signal diagnostics.'],
+];
+const heroBg = `linear-gradient(180deg,rgba(8,12,18,.12) 0%,rgba(8,12,18,.4) 40%,rgba(8,12,18,.9) 100%),url(${u('img/hero.jpg')})`;
+---
+<Base title="Home">
+  <div class="hero" role="img" aria-label="Dimas standing in a data center server room" style={`background-image:${heroBg}`}>
+    <h1>Dimas Adrian<br />Haifa Arfan</h1>
+    <p class="lead">I’m a Telecommunications Engineering student at PENS with hands-on experience in broadband NOC operations and FTTx network planning. My interests are telecommunications core network planning and Security Operations Center (SOC) work.</p>
+  </div>
+  <div class="fiber" aria-hidden="true"></div>
+  <h2>What I work on</h2>
+  <ul class="pillars">
+    {pillars.map(([t, d]) => <li><a href={`${u('writing/')}#${encodeURIComponent(t)}`}><strong>{t}</strong><span>{d}</span></a></li>)}
+  </ul>
+  <h2>Writing and videos</h2>
+  <ul class="list">
+    {latest.map((n) => (
+      <li class="it">
+        {n.thumb && <a href={n.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src={u(n.thumb)} alt="" width="132" height="84" /></a>}
+        <div>
+          <a class="t" href={n.url} target="_blank" rel="noopener">{n.title} ↗</a>
+          <div class="meta"><span class="tag">{n.type}</span>{(n.tags || []).map((t) => <span class="tag">{t}</span>)}{n.date}</div>
+          <div class="meta">{n.blurb}</div>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <p class="more"><a href={u('writing/')}>See everything</a></p>
+</Base>

@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const u = (p = '') => `${base}/${p}`;
+const items = Object.entries(import.meta.glob('../content/writing/*.md', { eager: true })).sort().map(([, m]) => m.frontmatter);
+const topics = ['All', 'Cybersecurity', 'Network', 'Telecommunications', 'Fiber optic'];
+---
+<Base title="Writing">
+  <h2>Writing and videos</h2>
+  <div class="filters" id="filters" role="group" aria-label="Filter by topic">
+    {topics.map((t) => <button data-topic={t} aria-pressed={t === 'All' ? 'true' : 'false'}>{t}</button>)}
+  </div>
+  <ul class="list">
+    {items.map((n) => (
+      <li class="it" data-tags={(n.tags || []).join('|')}>
+        {n.thumb && <a href={n.url} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true"><img src={u(n.thumb)} alt="" width="132" height="84" loading="lazy" /></a>}
+        <div>
+          <a class="t" href={n.url} target="_blank" rel="noopener">{n.title} ↗</a>
+          <div class="meta"><span class="tag">{n.type}</span>{(n.tags || []).map((t) => <span class="tag">{t}</span>)}{n.date}</div>
+          <div class="meta">{n.blurb}</div>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <script is:inline>
+    (function () {
+      var chips = document.querySelectorAll("#filters button"), rows = document.querySelectorAll(".list li");
+      function apply(t) {
+        chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c.dataset.topic === t)); });
+        rows.forEach(function (r) { r.style.display = (t === "All" || r.dataset.tags.split("|").indexOf(t) > -1) ? "" : "none"; });
+      }
+      chips.forEach(function (c) { c.addEventListener("click", function () { apply(c.dataset.topic); }); });
+      var h = decodeURIComponent((location.hash || "").slice(1));
+      if (h) apply(h);
+    })();
+  </script>
+</Base>
